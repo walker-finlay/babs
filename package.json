@@ -1,0 +1,23 @@
+{
+    "name": "babs",
+    "version": "1.0.0",
+    "description": "better at brawl stars",
+    "main": "backend/app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/walker-finlay/babs.git"
+    },
+    "author": "Walker Finlay",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/walker-finlay/babs/issues"
+    },
+    "homepage": "https://github.com/walker-finlay/babs#readme",
+    "dependencies": {
+        "express": "^4.17.1",
+        "pg": "^8.0.0"
+    }
+}
