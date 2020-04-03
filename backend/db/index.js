@@ -9,7 +9,7 @@ db.once('open', () => {
 });
 
 var battleSchema = new mongoose.Schema({
-    battleTime: { type: Date, index: true },
+    battleTime: Date,
     battle: {},
     event: {
         id: Number,
@@ -17,30 +17,56 @@ var battleSchema = new mongoose.Schema({
         map: String,
     },
 });
+battleSchema.index('battleTime', { unique: true })
+
+var battleModel = mongoose.model('Battle', battleSchema);
 
 function formatDate(date) {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 11) + ':' + date.slice(11, 13) + ':' + date.slice(13);
 }
 
-var battleTuple = mongoose.model('Battle', battleSchema);
-
 // Methods for backend ........................................................
 module.exports = {
-    insert() {
-        // for each battle: parse its timestamp, compare with most recent, break; insertmany or create
+    async insert(array) {
+        let top;
+        let insertBuffer = [];
+
+        // Most recent game in the db
+        await battleModel.find().sort({ battleTime: -1 }).limit(1)
+            .then(battles => { top = battles[0]; })
+            .catch(err => console.err(err));
+
+        console.log(top);
+
+        if (top != undefined) { /* If top is defined */
+            for (i in array) {
+                array[i].battleTime = Date.parse(formatDate(array[i].battleTime));
+                if (array[i].battleTime > top.battleTime) {
+                    insertBuffer.push(array[i]);
+                }
+            }
+        } else { /* Top is undefined (edge case) */
+            for (i in array) {
+                array[i].battleTime = Date.parse(formatDate(array[i].battleTime));
+            }
+            insertBuffer = array;
+        }
+
+        console.log(`adding ${insertBuffer.length} games.`);
+        await battleModel.insertMany(insertBuffer);
+        console.log('update complete');
     },
     exit() {
         mongoose.disconnect(() => {
             console.log('db disconnected'); /* WHY DOES THIS ONLY WORK SOMETIMES */
         })
     },
-    // TODO: delete this
-    async insertCurrent(inp) {
-        for (i in inp) {
-            inp[i].battleTime = formatDate(inp[i].battleTime);
-        }
-        await battleTuple.insertMany(inp);
-        console.log('here');
-        console.log('done inserting.');
-    },
+    // async insertCurrent(inp) {
+    //     for (i in inp) {
+    //         inp[i].battleTime = formatDate(inp[i].battleTime);
+    //     }
+    //     await battleTuple.insertMany(inp);
+    //     console.log('here');
+    //     console.log('done inserting.');
+    // },
 };
