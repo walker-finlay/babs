@@ -5,28 +5,36 @@ var request = require('superagent');
 
 var port = process.env.PORT || 3000;
 
-// API stuff ..................................................................
-// setInterval(() => {
-//     var playerTag = "802PRQ2L"
-//     var requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
-//     request.get(requestURL)
-//         .set('authorization', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjhmN2ZjY2I0LTNmOTUtNDhmOC04NGFhLTg0MmMzNjI2ZjhhYyIsImlhdCI6MTU4NTcwMjg1OSwic3ViIjoiZGV2ZWxvcGVyL2QzZGQzYTQ2LTAxNjMtYmZiZi02NzE5LTQ1MGEwN2FhYmFmMiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzEuMTI1Ljg3LjUzIl0sInR5cGUiOiJjbGllbnQifV19.GGGCG2ntMchf80TdqAQk_Vv1Tk1iVOy-G5--QPmxYR-a_-fmZZ_DBnlCpq1KAQ4BWZ6GULiPZ1A6x7J5vXjiHw')
-//         .then(res => {
-//             var result = JSON.parse(res.text)['items'];
-//             db.insert(result);
-//         })
-//         .catch(err => { console.log(err) });
-// }, 12 * 60 * 60 * 1000); /* 12 hours * 60 minutes * 60 seconds * 1000 milliseconds */
+var tags = { jinx: '802PRQ2L', gouda: 'PGR2PP8U' };
 
-var playerTag = "802PRQ2L"
-var requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
-request.get(requestURL)
-    .set('authorization', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjhmN2ZjY2I0LTNmOTUtNDhmOC04NGFhLTg0MmMzNjI2ZjhhYyIsImlhdCI6MTU4NTcwMjg1OSwic3ViIjoiZGV2ZWxvcGVyL2QzZGQzYTQ2LTAxNjMtYmZiZi02NzE5LTQ1MGEwN2FhYmFmMiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzEuMTI1Ljg3LjUzIl0sInR5cGUiOiJjbGllbnQifV19.GGGCG2ntMchf80TdqAQk_Vv1Tk1iVOy-G5--QPmxYR-a_-fmZZ_DBnlCpq1KAQ4BWZ6GULiPZ1A6x7J5vXjiHw')
-    .then(res => {
-        var result = JSON.parse(res.text)['items'];
-        db.insert(result);
-    })
-    .catch(err => { console.log(err) });
+async function getHistory(playerTag) {
+    let requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
+    let result;
+    await request.get(requestURL)
+        .set('authorization', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjQzNmU0YWU2LWYwODUtNDNjYS1hMDUxLTJkYjZkNDkyMjc5OSIsImlhdCI6MTU4NjU2MjYzMiwic3ViIjoiZGV2ZWxvcGVyL2QzZGQzYTQ2LTAxNjMtYmZiZi02NzE5LTQ1MGEwN2FhYmFmMiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzEuMTI1Ljc5LjIyNiJdLCJ0eXBlIjoiY2xpZW50In1dfQ.HnsYrWETQ2gVs-fLRJ3fbOOHMyDkKYQJYNZbauqNVE51Q_c024usKDIh9i_o74M3QP6CDVzrPYOytSty0_apOg')
+        .then(res => {
+            result = JSON.parse(res.text)['items'];
+        })
+        .catch(err => { console.log(err) });
+    return result;
+}
+
+getHistory(tags.jinx).then(result => {
+    db.insert(result, tags.jinx);
+}).catch(err => {
+    console.log(err);
+});
+
+setInterval(
+    () => {
+        getHistory(tags.jinx).then(result => {
+            db.insert(result);
+        }).catch(err => {
+            console.log(err);
+        });
+    }, 3600000 /* =1000 * 60 * 60 Updates every 60 minutes */
+);
+
 
 // Server stuff ...............................................................
 app.listen(port, () => {
