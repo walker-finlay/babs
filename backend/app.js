@@ -19,11 +19,35 @@ async function getHistory(playerTag) {
     return result;
 }
 
+// function update() {
+//     for (playerTag in tags) {
+//         console.log(tags[playerTag]);
+//         getHistory(tags[playerTag]).then(result => {
+//             db.insert(result, tags[playerTag]);
+//         }).catch(err => {
+//             console.log(err);
+//         })
+//     }
+// }
+
+var today = new Date();
+var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date + ' ' + time;
+
+console.log('[startup] ' + dateTime);
 getHistory(tags.jinx).then(result => {
     db.insert(result, tags.jinx);
 }).catch(err => {
     console.log(err);
 });
+getHistory(tags.gouda).then(result => {
+    db.insert(result, tags.gouda);
+}).catch(err => {
+    console.log(err);
+});
+
+// update();
 
 setInterval(
     () => {
@@ -32,6 +56,13 @@ setInterval(
         }).catch(err => {
             console.log(err);
         });
+
+        getHistory(tags.gouda).then(result => {
+            db.insert(result, tags.gouda);
+        }).catch(err => {
+            console.log(err);
+        });
+        // update();
     }, 3600000 /* =1000 * 60 * 60 Updates every 60 minutes */
 );
 
