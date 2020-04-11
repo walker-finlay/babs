@@ -52,7 +52,7 @@ getHistory(tags.gouda).then(result => {
 setInterval(
     () => {
         getHistory(tags.jinx).then(result => {
-            db.insert(result);
+            db.insert(result, tags.jinx);
         }).catch(err => {
             console.log(err);
         });
@@ -63,7 +63,7 @@ setInterval(
             console.log(err);
         });
         // update();
-    }, 3600000 /* =1000 * 60 * 60 Updates every 60 minutes */
+    }, 1000 * 60 * 30 /* 30 min */
 );
 
 
