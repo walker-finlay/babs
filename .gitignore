@@ -3,3 +3,4 @@ backend/db/example.json
 backend/db/old_schemas.js
 test.js
 changes.log
+.next

@@ -19,11 +19,11 @@ var battleSchema = new mongoose.Schema({
         map: String,
     },
 });
-battleSchema.index('battleTime', { unique: true });
+battleSchema.index('battleTime');
 battleSchema.index('player');
 var battleModel = mongoose.model('Battle', battleSchema);
 
-// Helper methods
+// Helper methods -------------------------------
 function formatDate(date) {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 11) + ':' + date.slice(11, 13) + ':' + date.slice(13);
 }
@@ -53,7 +53,7 @@ module.exports = {
         for (i in array) {
             array[i].player = player;
             array[i].battleTime = Date.parse(formatDate(array[i].battleTime));
-            if (array[i].player == player && array[i].battleTime > top.battleTime) insertBuffer.push(array[i]);
+            if (array[i].battleTime > top.battleTime) insertBuffer.push(array[i]);
         }
 
         var today = new Date();
@@ -61,7 +61,9 @@ module.exports = {
         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         var dateTime = date + ' ' + time;
 
-        await battleModel.insertMany(insertBuffer);
+        await battleModel.insertMany(insertBuffer)
+            .catch(err => console.log(err));
+
         console.log(`${dateTime} Inserted ${insertBuffer.length} ${player} game(s).`);
     },
     exit() {
