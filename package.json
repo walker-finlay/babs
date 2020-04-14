@@ -4,7 +4,7 @@
     "description": "better at brawl stars",
     "main": "backend/app.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "next"
     },
     "repository": {
         "type": "git",
@@ -19,7 +19,10 @@
     "dependencies": {
         "express": "^4.17.1",
         "mongoose": "^5.9.7",
+        "next": "^9.3.4",
         "pg": "^8.0.0",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
         "superagent": "^5.2.2"
     }
 }

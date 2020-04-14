@@ -23,6 +23,7 @@ battleSchema.index('battleTime', { unique: true });
 battleSchema.index('player');
 var battleModel = mongoose.model('Battle', battleSchema);
 
+// Helper methods
 function formatDate(date) {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 11) + ':' + date.slice(11, 13) + ':' + date.slice(13);
 }
@@ -31,7 +32,7 @@ function getTopGame(whose) {
     return battleModel.find({ player: whose })
         .sort({ battleTime: -1 }).limit(1)
         .then(battles => {
-            if (battles[0] != undefined) { /* Are they in the database? */
+            if (battles[0] != undefined) { /* Are they in the database? (edge case) */
                 return battles[0];
             } else return { battleTime: Date.parse('2019-01-01T00:00:00.000Z') }
         })
@@ -65,7 +66,7 @@ module.exports = {
     },
     exit() {
         mongoose.disconnect(() => {
-            console.log('db disconnected'); /* WHY DOES THIS ONLY WORK SOMETIMES */
+            console.log('db disconnected'); /* Only outputs sometimes? */
         })
     },
 };

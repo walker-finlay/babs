@@ -2,9 +2,10 @@ const express = require('express');
 const app = express();
 const db = require('./db');
 var request = require('superagent');
+const path = require('path');
 
-var port = process.env.PORT || 3000;
 
+// Record keeping .............................................................
 var tags = { jinx: '802PRQ2L', gouda: 'PGR2PP8U' };
 
 async function getHistory(playerTag) {
@@ -46,8 +47,8 @@ setInterval(
     }, 1000 * 60 * 30 /* 30 min */
 );
 
-
 // Server stuff ...............................................................
+var port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
