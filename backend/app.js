@@ -41,11 +41,9 @@ var dateTime = date + ' ' + time;
 console.log('[startup] ' + dateTime);
 update(); /* Initial update */
 
-setInterval(
-    () => {
-        update();
-    }, 1000 * 60 * 30 /* 30 min */
-);
+setInterval(() => {
+    update();
+}, 1000 * 60 * 60 * 8 /* 8 hours */ );
 
 // Server stuff ...............................................................
 var port = process.env.PORT || 3000;
