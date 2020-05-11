@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const db = require('./db');
 var request = require('superagent');
-const path = require('path');
 
 
 // Record keeping .............................................................
@@ -38,12 +37,15 @@ var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getD
 var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 var dateTime = date + ' ' + time;
 
+var update_t = process.env.UPDATE || 8;
+
+/* Update and start timer */
 console.log('[startup] ' + dateTime);
 update(); /* Initial update */
 
 setInterval(() => {
     update();
-}, 1000 * 60 * 60 * 8 /* 8 hours */ );
+}, 1000 * 60 * 60 * update_t /* 8 hours */ );
 
 // Server stuff ...............................................................
 var port = process.env.PORT || 3000;
