@@ -20,8 +20,8 @@ async function getHistory(playerTag) {
 }
 
 /**
- * Get history and insert it for some players
- * @param  {...any} players Array of players to update
+ * Get history and insert new ones into db
+ * @param {[JSON]} players array of players conforming to schema
  */
 function update(players) {
     for (let i in players) {
@@ -34,18 +34,19 @@ function update(players) {
 /**
  * Logging info and initial update
  */
+var players;
 async function init() {
     console.log('[startup] ' + db.dateString());
-    var players = await db.getPlayers();
+    players = await db.getPlayers();
     update(players);
 }
 
-/* Update once and start update cycle */
+// Startup --------------------------------------
 init();
 var interval = process.env.UPDATE || 8;
 setInterval(() => {
     update(players);
-}, 1000 * 60 * 60 * interval /* 8 hours */ );
+}, 1000 * 60 * 60 * interval /* interval hours */ );
 
 // Server stuff ...............................................................
 var port = process.env.PORT || 3000;

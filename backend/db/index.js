@@ -17,7 +17,7 @@ const battleSchema = new mongoose.Schema({
         map: String,
     },
 });
-battleSchema.index('battleTime');
+battleSchema.index('battleTime'); /* schema.index() is idempotent */
 battleSchema.index('player');
 var battleModel = mongoose.model('Battle', battleSchema);
 
@@ -52,13 +52,13 @@ module.exports = {
         return date + ' ' + time;
     },
     /**
-     * Input the API response and which player's record to add it to
+     * Input the API response and player associated with the documents
      * @param {[Battle]} array 25 battle entries from bs API
      * @param {String} player player tag
      */
     async insert(array, player) {
         let insertBuffer = [];
-        const top = await getTopGame(player); /* const is block-scoped FYI */
+        const top = await getTopGame(player);
 
         for (i in array) {
             array[i].player = player;
