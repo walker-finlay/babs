@@ -5,7 +5,7 @@ var request = require('superagent');
 
 
 // Record keeping .............................................................
-var tags = { jinx: '802PRQ2L', gouda: 'PGR2PP8U' };
+var tags = { jinx: '802PRQ2L', gouda: 'PGR2PP8U' }; /* TODO: get rid of this - put it in db and assign on startup */
 
 async function getHistory(playerTag) {
     let requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
@@ -19,33 +19,33 @@ async function getHistory(playerTag) {
     return result;
 }
 
-function update() {
-    getHistory(tags.jinx).then(result => {
-        db.insert(result, tags.jinx);
-    }).catch(err => {
-        console.log(err);
-    });
-    getHistory(tags.gouda).then(result => {
-        db.insert(result, tags.gouda);
-    }).catch(err => {
-        console.log(err);
-    });
+/**
+ * Get history and insert it for some players
+ * @param  {...any} players Array of players to update
+ */
+function update(players) {
+    for (let i in players) {
+        getHistory(players[i].tag)
+            .then(result => db.insert(result, players[i].tag))
+            .catch(err => console.log(err));
+    }
 }
 
-var today = new Date();
-var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-var dateTime = date + ' ' + time;
+/**
+ * Logging info and initial update
+ */
+async function init() {
+    console.log('[startup] ' + db.dateString());
+    var players = await db.getPlayers();
+    update(players);
+}
 
-var update_t = process.env.UPDATE || 8;
-
-/* Update and start timer */
-console.log('[startup] ' + dateTime);
-update(); /* Initial update */
-
+/* Update once and start update cycle */
+init();
+var interval = process.env.UPDATE || 8;
 setInterval(() => {
-    update();
-}, 1000 * 60 * 60 * update_t /* 8 hours */ );
+    update(players);
+}, 1000 * 60 * 60 * interval /* 8 hours */ );
 
 // Server stuff ...............................................................
 var port = process.env.PORT || 3000;
@@ -55,7 +55,7 @@ app.listen(port, () => {
 
 process.on('SIGINT', () => {
     (async() => {
-        await db.exit();
+        await db.safeExit();
         console.log('Received SIGINT');
         process.exit();
     })();
