@@ -2,4 +2,4 @@
 better at brawl stars
 
 ## Startup
-start with environment variable UPDATE for how often to download games, in hours.
+update interval is set by UPDATE environment variable or defaults to 8 (hours)
