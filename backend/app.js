@@ -3,10 +3,7 @@ const app = express();
 const db = require('./db');
 var request = require('superagent');
 
-
 // Record keeping .............................................................
-var tags = { jinx: '802PRQ2L', gouda: 'PGR2PP8U' }; /* TODO: get rid of this - put it in db and assign on startup */
-
 async function getHistory(playerTag) {
     let requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
     let result;
@@ -24,9 +21,9 @@ async function getHistory(playerTag) {
  * @param {[JSON]} players array of players conforming to schema
  */
 function update(players) {
-    for (let i in players) {
-        getHistory(players[i].tag)
-            .then(result => db.insert(result, players[i].tag))
+    for (let p of players) {
+        getHistory(p.tag)
+            .then(result => db.insert(result, p.tag))
             .catch(err => console.log(err));
     }
 }

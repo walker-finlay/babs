@@ -1,4 +1,4 @@
 #!/bin/bash
 
-UPDATE=8 
+export UPDATE=4 
 node backend/app.js >> changes.log 2>>changes.log &
