@@ -1,7 +1,12 @@
+/**
+ * index.js
+ * author: walker-finlay
+ * 
+ * All the methods needed for contact and CRUD with the mlab database
+ */
 var mongoose = require('mongoose');
 var db = mongoose.connection;
 
-// DB stuff ...................................................................
 mongoose.connect('mongodb://walker:qY5!7t!n4faEViD@ds159493.mlab.com:59493/heroku_thkqjgt1', { useNewUrlParser: true, useUnifiedTopology: true });
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
@@ -71,9 +76,13 @@ module.exports = {
         await battleModel.insertMany(insertBuffer)
             .catch(err => console.log(err));
 
-        console.log(`${dateTime} Inserted ${insertBuffer.length} ${player} game(s).`);
+        if (insertBuffer.length > 0) { /* Log only if there was anything new */
+            console.log(`${dateTime} Inserted ${insertBuffer.length} ${player} game(s).`);
+        }
+
+        return insertBuffer.length;
     },
-    async newPlayer(playerName, playerTag) {
+    async newPlayer(playerName, playerTag) { /* Does this need to be async? */
         await playerModel.create({ tag: playerTag, name: playerName })
             .then(inserted => {
                 console.log(`${dateString()} new player \n${inserted}.`);

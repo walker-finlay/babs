@@ -1,9 +1,14 @@
-const express = require('express');
-const app = express();
+/**
+ * app.js
+ * author: walker-finlay
+ * 
+ * Periodically request bs API for all users and update their stats
+ */
 const db = require('./db');
 var request = require('superagent');
 
-// Record keeping .............................................................
+var interval = process.env.UPDATE || 8;
+
 async function getHistory(playerTag) {
     let requestURL = `https://api.brawlstars.com/v1/players/%24${playerTag}/battlelog`;
     let result;
@@ -21,11 +26,16 @@ async function getHistory(playerTag) {
  * @param {[JSON]} players array of players conforming to schema
  */
 function update(players) {
+    let accumulator = 0;
     for (let p of players) {
         getHistory(p.tag)
-            .then(result => db.insert(result, p.tag))
+            .then(
+                result => {
+                    accumulator += db.insert(result, p.tag);
+                })
             .catch(err => console.log(err));
     }
+    return accumulator;
 }
 
 /**
@@ -35,22 +45,20 @@ var players;
 async function init() {
     console.log('[startup] ' + db.dateString());
     players = await db.getPlayers();
-    update(players);
+    if (update(players) == 0) {
+        console.log(`No new games. Next update in ${interval} hours.`);
+    }
 }
 
 // Startup --------------------------------------
 init();
-var interval = process.env.UPDATE || 8;
 setInterval(() => {
     update(players);
 }, 1000 * 60 * 60 * interval /* interval hours */ );
 
-// Server stuff ...............................................................
-var port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-});
-
+/**
+ * Graceful shutdown on SIGINT
+ */
 process.on('SIGINT', () => {
     (async() => {
         await db.safeExit();

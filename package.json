@@ -18,6 +18,7 @@
     "homepage": "https://github.com/walker-finlay/babs#readme",
     "dependencies": {
         "express": "^4.17.1",
+        "json2csv": "^5.0.1",
         "mongoose": "^5.9.7",
         "next": "^9.3.4",
         "pg": "^8.0.0",
