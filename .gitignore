@@ -4,3 +4,4 @@ backend/db/old_schemas.js
 test.js
 changes.log
 .next
+.vscode/
